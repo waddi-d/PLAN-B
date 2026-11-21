@@ -1,0 +1,189 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b12">
+  <title>CinemaVault — Movies</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">C</span> CINEMAVAULT</a>
+    <nav>
+      <a href="#library">Library</a>
+      <a href="#plans">Packages</a>
+    </nav>
+    <div class="top-actions">
+      <span id="user-label" class="user-label">Not signed in</span>
+      <button id="auth-open" class="btn btn-quiet">Login / Register</button>
+      <button id="logout-btn" class="btn btn-quiet hidden">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <span class="eyebrow"><i></i> YOUR MOVIE NIGHT STARTS HERE</span>
+        <h1>Stories worth<br><em>staying up for.</em></h1>
+        <p>Explore the library, choose an access package and enjoy movies on your terms.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#library">Explore movies <span>↗</span></a>
+          <a class="btn btn-outline" href="#plans">View packages</a>
+        </div>
+        <div class="hero-note"><span class="live-dot"></span> New titles added by the administrator</div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="poster poster-back"></div>
+        <div class="poster poster-mid"></div>
+        <div class="poster poster-front">
+          <span>THE<br>UNKNOWN</span>
+          <small>AN ORIGINAL STORY</small>
+        </div>
+        <div class="art-glow"></div>
+      </div>
+    </section>
+
+    <section id="plans" class="section plans-section">
+      <div class="section-heading">
+        <div><span class="eyebrow">SIMPLE ACCESS</span><h2>Choose your package</h2></div>
+        <p>One package unlocks the entire movie library for its duration.</p>
+      </div>
+
+      <div class="plan-grid">
+        <article class="plan-card">
+          <span class="plan-duration">48 HOURS</span>
+          <h3>2 Days</h3>
+          <div class="price">UGX 1,000</div>
+          <p>Full library access for two days.</p>
+          <button class="btn btn-outline plan-select" data-plan="two_days">Choose 2 days</button>
+        </article>
+
+        <article class="plan-card featured">
+          <span class="popular">POPULAR</span>
+          <span class="plan-duration">72 HOURS</span>
+          <h3>3 Days</h3>
+          <div class="price">UGX 1,500</div>
+          <p>Full library access for three days.</p>
+          <button class="btn btn-primary plan-select" data-plan="three_days">Choose 3 days</button>
+        </article>
+
+        <article class="plan-card">
+          <span class="plan-duration">7 DAYS</span>
+          <h3>1 Week</h3>
+          <div class="price">UGX 3,000</div>
+          <p>Full library access for one week.</p>
+          <button class="btn btn-outline plan-select" data-plan="one_week">Choose 1 week</button>
+        </article>
+      </div>
+      <p class="fine-print">Access begins after GovBill confirms your payment.</p>
+    </section>
+
+    <section id="library" class="section library-section">
+      <div class="section-heading">
+        <div><span class="eyebrow">THE COLLECTION</span><h2>Movie library</h2></div>
+        <div class="library-tools">
+          <input id="movie-search" type="search" placeholder="Search movies..." aria-label="Search movies">
+          <span id="access-status" class="access-pill">Sign in to check access</span>
+        </div>
+      </div>
+      <div id="movie-grid" class="movie-grid">
+        <div class="empty-state">Sign in to browse the movie library.</div>
+      </div>
+    </section>
+
+    <section id="admin-section" class="section admin-section hidden">
+      <div class="section-heading">
+        <div><span class="eyebrow">CONTROL ROOM</span><h2>Admin dashboard</h2></div>
+        <span class="admin-tag">ADMIN</span>
+      </div>
+
+      <form id="movie-form" class="admin-form">
+        <label>Movie title
+          <input name="title" required maxlength="120" placeholder="Movie title">
+        </label>
+        <label>Genre
+          <input name="genre" maxlength="60" placeholder="Drama, Action...">
+        </label>
+        <label>Description
+          <textarea name="description" rows="3" maxlength="1000" placeholder="Short movie description"></textarea>
+        </label>
+        <label>Poster image URL
+          <input name="poster_url" type="url" placeholder="https://...">
+        </label>
+        <label>Movie video file
+          <input name="video" type="file" accept="video/mp4,video/webm,video/quicktime" required>
+        </label>
+        <button class="btn btn-primary" type="submit">Upload movie</button>
+      </form>
+      <p class="fine-print">Only upload films you own or are authorized to distribute. Keep the Supabase Storage bucket private.</p>
+      <div id="admin-message" class="notice hidden"></div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand" href="#"><span class="brand-mark">C</span> CINEMAVAULT</a>
+    <span>© <span id="year"></span> CinemaVault. All rights reserved.</span>
+    <span>Watch responsibly.</span>
+  </footer>
+
+  <dialog id="auth-dialog" class="modal">
+    <button class="modal-close" id="auth-close" aria-label="Close">×</button>
+    <span class="eyebrow">WELCOME TO CINEMAVAULT</span>
+    <h2 id="auth-title">Sign in</h2>
+    <form id="auth-form">
+      <label>Email address
+        <input type="email" name="email" autocomplete="email" required>
+      </label>
+      <label>Password
+        <input type="password" name="password" minlength="8" autocomplete="current-password" required>
+      </label>
+      <label id="name-field" class="hidden">Your name
+        <input name="full_name" autocomplete="name">
+      </label>
+      <button class="btn btn-primary full" id="auth-submit" type="submit">Sign in</button>
+    </form>
+    <p class="switch-auth">
+      <span id="switch-copy">New here?</span>
+      <button id="switch-auth" class="text-button" type="button">Create an account</button>
+    </p>
+    <div id="auth-message" class="notice hidden"></div>
+  </dialog>
+
+  <dialog id="payment-dialog" class="modal">
+    <button class="modal-close" id="payment-close" aria-label="Close">×</button>
+    <span class="eyebrow">SECURE MOBILE MONEY</span>
+    <h2>Complete payment</h2>
+    <div id="selected-plan" class="selected-plan"></div>
+    <form id="payment-form">
+      <label>Payment network
+        <select name="provider" required>
+          <option value="mtn_momo_ug">MTN Mobile Money</option>
+          <option value="airtel_money_ug">Airtel Money</option>
+        </select>
+      </label>
+      <label>Mobile money number
+        <input name="phone" inputmode="tel" autocomplete="tel" placeholder="07XXXXXXXX or 2567XXXXXXXX" required>
+      </label>
+      <button class="btn btn-primary full" type="submit">Request payment</button>
+    </form>
+    <p class="fine-print">Approve the payment prompt on your phone. Never share your mobile money PIN.</p>
+    <div id="payment-message" class="notice hidden"></div>
+  </dialog>
+
+  <dialog id="movie-dialog" class="modal movie-modal">
+    <button class="modal-close" id="movie-close" aria-label="Close">×</button>
+    <div id="movie-detail"></div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>
