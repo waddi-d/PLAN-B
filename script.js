@@ -187,6 +187,28 @@ function renderMovies() {
   });
 }
 
+function openPaymentForMovie() {
+  const packageChoice = prompt(
+    "Choose a package:\n1. 2 Days - UGX 1,000\n2. 3 Days - UGX 1,500\n3. 1 Week - UGX 3,000"
+  );
+
+  const selected = {
+    "1": "two_days",
+    "2": "three_days",
+    "3": "one_week"
+  }[packageChoice];
+
+  if (!selected) return;
+
+  currentPlan = plans[selected];
+
+  $("selected-plan").textContent =
+    `${currentPlan.name} — UGX ${currentPlan.amount.toLocaleString()}`;
+
+  hideNotice("payment-message");
+  paymentDialog.showModal();
+}
+
 async function openMovie(id) {
   const movie = movies.find(m => m.id === id);
   if (!movie) return;
