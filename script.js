@@ -203,7 +203,7 @@ async function openMovie(id) {
         <div id="movie-action-area">
           ${hasAccess
             ? '<button id="play-movie" class="btn btn-primary">Watch / Download</button>'
-            : '<p>Your account needs an active package to watch or download this movie.</p><a class="btn btn-primary" href="#plans" id="movie-plans">View packages</a>'}
+            : '<button id="movie-plans" class="btn btn-primary">Choose a package to continue</button>'
         </div>
       </div>
     </div>
