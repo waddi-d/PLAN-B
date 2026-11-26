@@ -406,6 +406,54 @@ $("movie-close").addEventListener("click", () => movieDialog.close());
 $("movie-form").addEventListener("submit", async e => {
   e.preventDefault();
 
+  if (!isAdmin) {
+    return toast("Administrator access required.");
+  }
+
+  const form = e.currentTarget;
+  const fd = new FormData(form);
+
+  const videoUrl = String(fd.get("video_url") || "").trim();
+
+  try {
+    const parsedUrl = new URL(videoUrl);
+
+    if (!["https:", "http:"].includes(parsedUrl.protocol)) {
+      throw new Error("Enter a valid video URL.");
+    }
+
+    notice("admin-message", "Adding movie...");
+
+    const insert = await db.from("movies").insert({
+      title: fd.get("title"),
+      genre: fd.get("genre"),
+      description: fd.get("description"),
+      poster_url: fd.get("poster_url") || null,
+      video_url: videoUrl,
+      storage_path: null,
+      is_published: true
+    }).select().single();
+
+    if (insert.error) {
+      throw insert.error;
+    }
+
+    form.reset();
+
+    notice("admin-message", "Movie added successfully!");
+
+    await loadMovies();
+
+  } catch (err) {
+    notice(
+      "admin-message",
+      err.message || "Could not add movie.",
+      true
+    );
+  }
+});
+  e.preventDefault();
+
   if (!isAdmin) return;
 
   const form = e.currentTarget;
