@@ -212,8 +212,16 @@ async function openMovie(id) {
   movieDialog.showModal();
 
   $("play-movie")?.addEventListener("click", () => getMovieFile(movie.id));
-  $("movie-plans")?.addEventListener("click", () => movieDialog.close());
-}
+  $("movie-plans")?.addEventListener("click", () => {
+  movieDialog.close();
+
+  if (!currentUser) {
+    openAuth();
+    return;
+  }
+
+  openPaymentForMovie();
+});
 
 async function getMovieFile(id) {
   const button = $("play-movie");
