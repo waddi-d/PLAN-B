@@ -120,9 +120,18 @@
         <label>Poster image URL
           <input name="poster_url" type="url" placeholder="https://...">
         </label>
-        <label>Movie video file
-          <input name="video" type="file" accept="video/mp4,video/webm,video/quicktime" required>
-        </label>
+        <label>Movie video URL
+  <input
+    name="video_url"
+    type="url"
+    placeholder="https://example.com/movie.mp4"
+    required
+  >
+</label>
+
+<button class="btn btn-primary" type="submit">
+  Add movie
+</button>
         <button class="btn btn-primary" type="submit">Upload movie</button>
       </form>
       <p class="fine-print">Only upload films you own or are authorized to distribute. Keep the Supabase Storage bucket private.</p>
